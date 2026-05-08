@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import AuditResultsClient from './AuditResultsClient';
 import { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { data } = await supabase.from('audits').select('*').eq('id', params.id).single();
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const { data } = await supabase.from('audits').select('*').eq('id', id).single();
   if (!data) return { title: 'Audit Not Found' };
   
   return {
@@ -21,20 +22,21 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function AuditPage({ params }: { params: { id: string } }) {
+export default async function AuditPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { data: auditData, error } = await supabase
     .from('audits')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !auditData) {
     // Return mock data for local testing when Supabase fails
-    return <AuditResultsClient mockId={params.id} />;
+    return <AuditResultsClient mockId={id} />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#0a0a0f] py-12 px-4 sm:px-6 lg:px-8">
       <AuditResultsClient initialData={auditData} />
     </div>
   );

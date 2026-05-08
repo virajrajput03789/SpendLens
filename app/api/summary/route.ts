@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { generateFallbackSummary } from '@/lib/audit-engine';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || 'mock-key',
-});
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 export async function POST(req: Request) {
   try {
@@ -20,8 +19,7 @@ export async function POST(req: Request) {
       nextStep
     } = await req.json();
 
-    if (!process.env.ANTHROPIC_API_KEY) {
-      // Use fallback if API key is not configured
+    if (!process.env.GOOGLE_API_KEY) {
       const fallback = generateFallbackSummary(currentTotal, toolCount, useCase, teamSize, totalSavings, annualSavings, topRecommendations, nextStep);
       return NextResponse.json({ summary: fallback });
     }
@@ -43,19 +41,18 @@ Do not be generic. Do not use filler phrases like "it's important to note."
 End with one actionable next step they should take this week.
     `;
 
-    const msg = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-latest",
-      max_tokens: 200,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const textContent = msg.content.find(c => c.type === 'text');
-    const summary = textContent ? textContent.text : generateFallbackSummary(currentTotal, toolCount, useCase, teamSize, totalSavings, annualSavings, topRecommendations, nextStep);
+    const model = genAI.getGenerativeModel(
+      { model: "gemini-1.5-flash-latest" },
+      { apiVersion: "v1beta" }
+    );
+    
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const summary = response.text() || generateFallbackSummary(currentTotal, toolCount, useCase, teamSize, totalSavings, annualSavings, topRecommendations, nextStep);
 
     return NextResponse.json({ summary });
   } catch (error) {
     console.error('Summary API Error:', error);
-    // Fallback on error
     const body = await req.json().catch(() => ({}));
     const fallback = generateFallbackSummary(
       body.currentTotal || 0, 

@@ -26,8 +26,8 @@ export async function POST(req: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     if (process.env.RESEND_API_KEY) {
-      await resend.emails.send({
-        from: 'Team SpendLens <onboarding@resend.dev>',
+      const { data: emailData, error: emailError } = await resend.emails.send({
+        from: 'SpendLens <onboarding@resend.dev>',
         to: email,
         subject: `Your AI spend audit — $${totalSavings}/mo savings identified`,
         text: `Hi there,
@@ -40,6 +40,12 @@ ${audit?.is_high_savings ? 'A Credex specialist will reach out within 24 hours a
 
 — Team SpendLens`
       });
+
+      if (emailError) {
+        console.error('Resend Error:', emailError);
+      } else {
+        console.log('Email sent successfully:', emailData);
+      }
     }
 
     return NextResponse.json({ success: true });

@@ -70,11 +70,26 @@ export function runAudit(
         let individualPlan = '';
         let individualPrice = 0;
 
-        if (input.tool === 'Cursor') { individualPlan = 'Pro'; individualPrice = toolData['Pro']; }
-        else if (input.tool === 'GitHub Copilot') { individualPlan = 'Individual'; individualPrice = toolData['Individual']; }
-        else if (input.tool === 'Claude (Anthropic)') { individualPlan = 'Pro'; individualPrice = toolData['Pro']; }
-        else if (input.tool === 'ChatGPT (OpenAI)') { individualPlan = 'Plus'; individualPrice = toolData['Plus']; }
-        else if (input.tool === 'Windsurf') { individualPlan = 'Pro'; individualPrice = toolData['Pro']; }
+        if (input.tool === 'Cursor') { 
+          individualPlan = 'Pro'; 
+          individualPrice = (toolData as any)['Pro'] || 0; 
+        }
+        else if (input.tool === 'GitHub Copilot') { 
+          individualPlan = 'Individual'; 
+          individualPrice = (toolData as any)['Individual'] || 0; 
+        }
+        else if (input.tool === 'Claude (Anthropic)') { 
+          individualPlan = 'Pro'; 
+          individualPrice = (toolData as any)['Pro'] || 0; 
+        }
+        else if (input.tool === 'ChatGPT (OpenAI)') { 
+          individualPlan = 'Plus'; 
+          individualPrice = (toolData as any)['Plus'] || 0; 
+        }
+        else if (input.tool === 'Windsurf') { 
+          individualPlan = 'Pro'; 
+          individualPrice = (toolData as any)['Pro'] || 0; 
+        }
 
         if (individualPlan && currentPlanPrice && currentPlanPrice > individualPrice) {
           result.recommendation = 'downgrade';
@@ -87,12 +102,12 @@ export function runAudit(
       
       // Rule 2: Cheaper same-vendor plan (if not already downgraded by Rule 1)
       if (result.recommendation === 'optimal' || result.recommendation === 'credits') {
-         // Simplified Rule 2 for same-vendor lower plans based on use case
-         // For example, if useCase is writing but they are on Claude Max, Pro is enough.
          if (input.tool === 'Claude (Anthropic)' && input.plan === 'Max' && useCase !== 'data') {
+             const maxPrice = (toolData as any)['Max'] || 0;
+             const proPrice = (toolData as any)['Pro'] || 0;
              result.recommendation = 'downgrade';
              result.recommendedPlan = 'Pro';
-             result.monthlySavings = (toolData['Max'] - toolData['Pro']) * input.seats;
+             result.monthlySavings = (maxPrice - proPrice) * input.seats;
              result.recommendedAction = `Based on your ${useCase} use case, Pro covers the core features you need.`;
              result.confidence = 'medium';
          }

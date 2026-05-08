@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import AuditResults from '@/components/AuditResults';
 
 export default function AuditResultsClient({ initialData, mockId }: { initialData?: any, mockId?: string }) {
-  const [aiSummary, setAiSummary] = useState<string>('Generating AI executive summary...');
+  const [aiSummary, setAiSummary] = useState<string>('');
   const [data, setData] = useState<any>(initialData);
 
   useEffect(() => {
@@ -44,10 +44,15 @@ export default function AuditResultsClient({ initialData, mockId }: { initialDat
     }
   }, [data]);
 
-  if (!data) return <div className="text-center py-12">Loading...</div>;
+  if (!data) return (
+    <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+       <div className="w-12 h-12 border-4 border-[#6366f1]/20 border-t-[#6366f1] rounded-full animate-spin mb-4"></div>
+       <div className="text-[var(--text-muted)] font-medium">Loading audit data...</div>
+    </div>
+  );
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-[760px] mx-auto bg-[#0a0a0f]">
       <AuditResults 
         auditData={data.audit_output} 
         aiSummary={aiSummary} 

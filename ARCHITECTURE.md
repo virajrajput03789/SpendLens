@@ -8,7 +8,7 @@ graph TD
     B --> C[audit-engine.ts — pure TS rules]
     C --> D[Supabase — store audit]
     D --> E[/api/summary POST]
-    E --> F[Anthropic API]
+    E --> F[Google Gemini API]
     F --> G[Return audit ID]
     G --> H[/audit/id — results page]
     H --> I[/api/leads POST — email capture]
@@ -27,6 +27,7 @@ graph TD
 - **Next.js 14**: SSR + API routes + @vercel/og in one framework
 - **Supabase**: Managed Postgres, free tier, RLS support
 - **Tailwind + shadcn/ui**: Rapid UI, accessible defaults, no design templates
+- **Resend**: Transactional email (Sandbox mode for this submission)
 - **TypeScript**: Mandatory for a finance-adjacent tool — no implicit any
 
 ## Scaling to 10k audits/day

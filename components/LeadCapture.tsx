@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 export default function LeadCapture({ auditId, isHighSavings, isOptimal }: { auditId: string, isHighSavings: boolean, isOptimal: boolean }) {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
+  const [role, setRole] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +28,7 @@ export default function LeadCapture({ auditId, isHighSavings, isOptimal }: { aud
       await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, company, auditId }),
+        body: JSON.stringify({ email, company, role, auditId }),
       });
       setSubmitted(true);
     } catch (err) {
@@ -38,53 +39,76 @@ export default function LeadCapture({ auditId, isHighSavings, isOptimal }: { aud
 
   if (submitted) {
     return (
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="p-6 text-center text-blue-900">
-          <h3 className="text-xl font-bold mb-2">Report sent!</h3>
-          <p>Check your inbox for the full breakdown.</p>
-        </CardContent>
-      </Card>
+      <div className="bg-[#6366f1]/10 border border-[#6366f1]/30 rounded-[24px] p-12 text-center mt-8 animate-fade-up">
+        <div className="text-[#6366f1] text-[48px] mb-4">📬</div>
+        <h3 className="font-display text-[24px] font-bold text-white mb-2">Report sent!</h3>
+        <p className="text-[#94a3b8]">Check your inbox for the full breakdown and Credex optimization guide.</p>
+      </div>
     );
   }
 
   return (
-    <Card className="border-2 border-indigo-100 shadow-sm mt-12">
-      <CardHeader className="bg-indigo-50/50 pb-4">
-        {isHighSavings ? (
-          <>
-            <CardTitle className="text-xl text-indigo-900">Capture more savings with Credex credits</CardTitle>
-            <CardDescription>Book a free consultation and get this report in your inbox.</CardDescription>
-          </>
-        ) : isOptimal ? (
-          <>
-            <CardTitle className="text-xl">Notify me when new savings apply</CardTitle>
-            <CardDescription>Get an email when lower pricing is available for your stack.</CardDescription>
-          </>
-        ) : (
-          <>
-            <CardTitle className="text-xl">Get this report in your inbox</CardTitle>
-            <CardDescription>Save these insights to share with your team.</CardDescription>
-          </>
-        )}
-      </CardHeader>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-          {/* Honeypot field */}
-          <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
-          
+    <div className="bg-[#12121f] border border-white/[0.08] rounded-[24px] p-10 mt-8 shadow-[0_4px_24px_rgba(0,0,0,0.4)] animate-fade-up stagger-3" style={{ animationDelay: '0.3s' }}>
+      <div className="mb-8">
+        <h3 className="font-display text-[22px] font-bold text-white mb-2">📬 Get your report in your inbox</h3>
+        <p className="text-[#94a3b8] text-[14px]">
+          {isHighSavings 
+            ? "We'll email your full audit. For high-savings cases, a Credex specialist will reach out within 24 hours."
+            : "We'll email your full audit breakdown and notify you of future optimization opportunities."}
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Honeypot field */}
+        <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
+        
+        <div className="space-y-2">
+          <label className="label-dark">Work Email</label>
+          <input 
+            type="email" 
+            required 
+            value={email} 
+            onChange={e => setEmail(e.target.value)} 
+            placeholder="you@company.com" 
+            className="input-dark"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Work Email</Label>
-            <Input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@startup.com" />
+            <label className="label-dark">Company (Optional)</label>
+            <input 
+              type="text" 
+              value={company} 
+              onChange={e => setCompany(e.target.value)} 
+              placeholder="Acme Corp" 
+              className="input-dark"
+            />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="company">Company Name (Optional)</Label>
-            <Input id="company" type="text" value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Corp" />
+            <label className="label-dark">Role (Optional)</label>
+            <input 
+              type="text" 
+              value={role} 
+              onChange={e => setRole(e.target.value)} 
+              placeholder="Engineering Lead" 
+              className="input-dark"
+            />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Sending...' : 'Send me the report'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+
+        <button 
+          type="submit" 
+          className="w-full mt-4 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white font-display font-bold py-4 px-6 rounded-[12px] shadow-[0_4px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.5)] hover:-translate-y-[1px] transition-all flex items-center justify-center gap-2 disabled:opacity-80"
+          disabled={loading}
+        >
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          ) : (
+            <span>Send me the report →</span>
+          )}
+        </button>
+      </form>
+    </div>
   );
 }
