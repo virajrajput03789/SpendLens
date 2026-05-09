@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import AuditResults from '@/components/AuditResults';
+import BackButton from '@/components/ui/BackButton';
 
 export default function AuditResultsClient({ initialData, mockId }: { initialData?: any, mockId?: string }) {
   const [aiSummary, setAiSummary] = useState<string>('');
   const [data, setData] = useState<any>(initialData);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
     // In local testing without Supabase, load from localStorage
@@ -16,7 +18,8 @@ export default function AuditResultsClient({ initialData, mockId }: { initialDat
   }, [initialData, mockId]);
 
   useEffect(() => {
-    if (data && data.audit_output) {
+    if (data && data.audit_output && !fetchedRef.current) {
+      fetchedRef.current = true;
       const fetchSummary = async () => {
         try {
           const res = await fetch('/api/summary', {
@@ -34,10 +37,30 @@ export default function AuditResultsClient({ initialData, mockId }: { initialDat
               nextStep: 'Review the plan changes with your team.'
             }),
           });
-          const { summary } = await res.json();
-          setAiSummary(summary);
+
+          if (!res.ok) throw new Error('Failed to fetch summary');
+
+          const reader = res.body?.getReader();
+          if (!reader) throw new Error('No reader available');
+          
+          const decoder = new TextDecoder();
+          let summaryText = '';
+
+          try {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              const chunkValue = decoder.decode(value, { stream: true });
+              summaryText += chunkValue;
+              setAiSummary(summaryText);
+            }
+          } finally {
+            reader.releaseLock();
+          }
         } catch (e) {
+          console.error('Streaming error:', e);
           setAiSummary('Failed to generate summary.');
+          fetchedRef.current = false;
         }
       };
       fetchSummary();
@@ -53,6 +76,7 @@ export default function AuditResultsClient({ initialData, mockId }: { initialDat
 
   return (
     <div className="w-full max-w-[760px] mx-auto bg-[#0a0a0f]">
+      <BackButton label="Back to Audit" />
       <AuditResults 
         auditData={data.audit_output} 
         aiSummary={aiSummary} 

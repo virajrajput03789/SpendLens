@@ -5,14 +5,14 @@ SpendLens is a free tool that audits your team's AI tool subscriptions — Curso
 Built as a lead-generation asset for [Credex](https://credex.rocks), a marketplace for discounted AI infrastructure credits.
 
 ## Screenshots
-- Audit Form Input
-- Per-tool Results Breakdown
-- Lead Capture Email Gate
+![Audit Form](https://placehold.co/600x400/0a0a0f/white?text=Audit+Form+Input)
+![Results Dashboard](https://placehold.co/600x400/0a0a0f/white?text=Per-tool+Results+Breakdown)
+![Lead Capture](https://placehold.co/600x400/0a0a0f/white?text=Lead+Capture+Email+Gate)
 
 ## Quick Start
 ```bash
 npm install
-cp .env.example .env.local   # fill in Supabase + Resend + Google Gemini keys
+cp .env.example .env.local   # fill in Supabase + Resend + NVIDIA API keys
 npm run dev
 ```
 

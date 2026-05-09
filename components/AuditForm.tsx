@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Trash2, Plus, Search, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Search, ChevronDown, ArrowLeft, RefreshCcw, Zap } from 'lucide-react';
+import BackButton from './ui/BackButton';
 
 interface ToolInput {
   id: string;
@@ -128,150 +129,172 @@ export default function AuditForm() {
   const itemClasses = "cursor-pointer focus:bg-[#6366f1] focus:text-white transition-colors";
 
   return (
-    <div className="min-h-screen bg-[#04040a] py-[60px] px-6 flex justify-center items-start relative">
-      <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#6366f1]/10 rounded-full blur-[100px] pointer-events-none z-0" />
+    <div className="min-h-screen bg-[#04040a] py-[60px] px-6 flex justify-center items-start relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
       
-      <div className="max-w-[680px] w-full bg-[#12121f] border border-white/[0.08] rounded-[24px] p-12 shadow-[0_4px_24px_rgba(0,0,0,0.4)] animate-fade-up relative z-1">
-        {/* Top gradient bar */}
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#06b6d4] rounded-t-[2px]" />
+      <div className="max-w-[680px] w-full bg-[#12121f]/60 backdrop-blur-xl border border-white/[0.08] rounded-[24px] p-8 md:p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] animate-fade-up relative z-1 overflow-hidden">
+        {/* Subtle premium top-border accent */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
 
-        <div className="mb-10">
-          <div className="w-10 h-10 bg-[#6366f1]/20 border border-[#6366f1]/30 rounded-full flex items-center justify-center mb-4 text-[20px]">
-            🔍
+        <div className="relative mb-10">
+          <BackButton className="mb-8" />
+          
+          <div className="flex items-start gap-5">
+            <div className="flex-shrink-0 w-12 h-12 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-[24px] shadow-inner">
+              🔍
+            </div>
+            <div>
+              <h1 className="font-display text-[28px] font-bold text-white tracking-tight">Audit Your AI Stack</h1>
+              <p className="text-slate-400 text-[14px] mt-1 font-medium">Identify overspending and optimize your team's AI budget.</p>
+            </div>
           </div>
-          <h1 className="font-display text-[28px] font-bold text-white">Audit Your AI Stack</h1>
-          <p className="text-[#94a3b8] text-[14px] mt-2">Tell us what you use. We'll tell you what to cut.</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-6 mb-8">
+        <form onSubmit={handleSubmit} className="space-y-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <label className="label-dark">Total Team Size</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Total Team Size</label>
               <input
                 type="number"
                 min="1"
                 value={teamSize}
                 onChange={(e) => setTeamSize(parseInt(e.target.value) || 1)}
                 required
-                className="input-dark h-11"
+                className="w-full bg-white/[0.03] border border-white/[0.08] focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all rounded-xl h-12 px-4 text-white text-[15px] outline-none"
               />
             </div>
             <div className="space-y-2">
-              <label className="label-dark">Primary Use Case</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Primary Use Case</label>
               <Select value={useCase} onValueChange={(v) => v && setUseCase(v as UseCase)}>
-                <SelectTrigger className={triggerClasses}>
+                <SelectTrigger className="w-full bg-white/[0.03] border border-white/[0.08] focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all rounded-xl h-12 px-4 text-white text-[15px]">
                   <SelectValue placeholder="Select use case" />
                 </SelectTrigger>
-                <SelectContent className={contentClasses}>
-                  <SelectItem value="coding" className={itemClasses}>Coding / Engineering</SelectItem>
-                  <SelectItem value="writing" className={itemClasses}>Writing / Content</SelectItem>
-                  <SelectItem value="data" className={itemClasses}>Data Analysis</SelectItem>
-                  <SelectItem value="research" className={itemClasses}>Research</SelectItem>
-                  <SelectItem value="mixed" className={itemClasses}>Mixed / General</SelectItem>
+                <SelectContent className="bg-[#1a1a2e] border border-white/[0.1] text-white shadow-2xl rounded-xl">
+                  <SelectItem value="coding" className="hover:bg-indigo-500/10 cursor-pointer">Coding / Engineering</SelectItem>
+                  <SelectItem value="writing" className="hover:bg-indigo-500/10 cursor-pointer">Writing / Content</SelectItem>
+                  <SelectItem value="data" className="hover:bg-indigo-500/10 cursor-pointer">Data Analysis</SelectItem>
+                  <SelectItem value="research" className="hover:bg-indigo-500/10 cursor-pointer">Research</SelectItem>
+                  <SelectItem value="mixed" className="hover:bg-indigo-500/10 cursor-pointer">Mixed / General</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="mb-4 flex justify-between items-center">
-            <label className="label-dark mb-0">TOOLS</label>
-            <button 
-              type="button" 
-              onClick={addTool}
-              className="bg-transparent border border-[#6366f1]/30 text-[#6366f1] rounded-[8px] px-4 py-2 text-[13px] font-medium transition-all hover:bg-[#6366f1]/5 hover:border-[#6366f1]"
-            >
-              + Add Tool
-            </button>
-          </div>
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Your AI Tools</label>
+              <button 
+                type="button" 
+                onClick={addTool}
+                className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 text-[13px] font-semibold bg-indigo-500/10 hover:bg-indigo-500/20 px-4 py-2 rounded-lg border border-indigo-500/20 transition-all active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                Add Tool
+              </button>
+            </div>
 
-          <div className="space-y-3 mb-6">
-            {tools.map((tool) => {
-              const availablePlans = PRICING_DATA[tool.tool as ToolName] 
-                ? Object.keys(PRICING_DATA[tool.tool as ToolName]) 
-                : ['Custom'];
+            <div className="space-y-4">
+              {tools.map((tool) => {
+                const availablePlans = PRICING_DATA[tool.tool as ToolName] 
+                  ? Object.keys(PRICING_DATA[tool.tool as ToolName]) 
+                  : ['Custom'];
 
-              return (
-                <div key={tool.id} className="group bg-white/[0.02] border border-white/[0.04] rounded-[12px] p-5 relative overflow-hidden transition-all hover:border-white/[0.08] hover:bg-white/[0.04]">
-                  <div className="absolute left-0 top-0 w-[3px] h-full bg-[#6366f1] opacity-0 group-hover:opacity-100 transition-opacity" />
-                  
-                  <div className="grid grid-cols-12 gap-4 items-end">
-                    <div className="col-span-12 sm:col-span-5 space-y-1">
-                      <label className="text-[10px] font-bold text-[#475569] uppercase tracking-wider">Tool</label>
-                      <Select value={tool.tool} onValueChange={(v) => updateTool(tool.id, 'tool', v)}>
-                        <SelectTrigger className="bg-[#0a0a0f] border-white/5 h-10 text-[13px] text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className={contentClasses}>
-                          {Object.keys(PRICING_DATA).map(t => (
-                            <SelectItem key={t} value={t} className={itemClasses}>{t}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                return (
+                  <div key={tool.id} className="group relative bg-white/[0.02] border border-white/[0.04] rounded-[18px] p-6 transition-all hover:bg-white/[0.04] hover:border-white/[0.1] hover:shadow-lg">
+                    {/* Delete button - Top-right alignment */}
+                    <button 
+                      type="button" 
+                      onClick={() => removeTool(tool.id)}
+                      className="absolute top-4 right-4 text-slate-600 hover:text-red-400/80 p-2 rounded-lg hover:bg-red-500/5 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      title="Remove tool"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                     
-                    <div className="col-span-6 sm:col-span-4 space-y-1">
-                      <label className="text-[10px] font-bold text-[#475569] uppercase tracking-wider">Plan</label>
-                      <Select value={tool.plan} onValueChange={(v) => updateTool(tool.id, 'plan', v)}>
-                        <SelectTrigger className="bg-[#0a0a0f] border-white/5 h-10 text-[13px] text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className={contentClasses}>
-                          {availablePlans.map(p => (
-                            <SelectItem key={p} value={p} className={itemClasses}>{p}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pr-4">
+                      <div className="md:col-span-5 space-y-2">
+                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1">Tool Name</label>
+                        <Select value={tool.tool} onValueChange={(v) => updateTool(tool.id, 'tool', v)}>
+                          <SelectTrigger className="bg-[#0a0a0f] border-white/[0.06] hover:border-white/[0.12] h-11 text-[14px] text-white rounded-lg">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[#1a1a2e] border border-white/[0.1] text-white shadow-2xl rounded-xl max-h-[300px]">
+                            {Object.keys(PRICING_DATA).map(t => (
+                              <SelectItem key={t} value={t} className="hover:bg-indigo-500/10 cursor-pointer">{t}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="md:col-span-4 space-y-2">
+                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1">Plan Level</label>
+                        <Select value={tool.plan} onValueChange={(v) => updateTool(tool.id, 'plan', v)}>
+                          <SelectTrigger className="bg-[#0a0a0f] border-white/[0.06] hover:border-white/[0.12] h-11 text-[14px] text-white rounded-lg">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[#1a1a2e] border border-white/[0.1] text-white shadow-2xl rounded-xl">
+                            {availablePlans.map(p => (
+                              <SelectItem key={p} value={p} className="hover:bg-indigo-500/10 cursor-pointer">{p}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    <div className="col-span-3 sm:col-span-1.5 space-y-1">
-                      <label className="text-[10px] font-bold text-[#475569] uppercase tracking-wider">Seats</label>
-                      <input 
-                        type="number" 
-                        min="1" 
-                        value={tool.seats} 
-                        onChange={(e) => updateTool(tool.id, 'seats', parseInt(e.target.value) || 1)} 
-                        className="input-dark h-10 px-2"
-                      />
-                    </div>
-
-                    <div className="col-span-3 sm:col-span-1.5 space-y-1 flex items-end">
-                      <button 
-                        type="button" 
-                        onClick={() => removeTool(tool.id)}
-                        className="text-[#ef4444]/50 hover:text-[#ef4444] hover:bg-[#ef4444]/10 p-2.5 rounded-[6px] transition-all ml-auto"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="md:col-span-3 space-y-2">
+                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1">Seats</label>
+                        <div className="relative">
+                          <input 
+                            type="number" 
+                            min="1" 
+                            value={tool.seats} 
+                            onChange={(e) => updateTool(tool.id, 'seats', parseInt(e.target.value) || 1)} 
+                            className="w-full bg-[#0a0a0f] border border-white/[0.06] hover:border-white/[0.12] focus:border-indigo-500/50 transition-all h-11 px-4 text-white text-[14px] rounded-lg outline-none"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
-          <div className="bg-[#6366f1]/5 border border-[#6366f1]/15 rounded-[12px] p-5 flex justify-between items-center mb-6">
-            <span className="text-[13px] text-[#94a3b8] font-medium">Running Total Spend</span>
-            <span className="font-display text-[22px] font-bold text-[#6366f1] transition-all animate-[counter_0.3s_ease]">
-              ${currentTotalCost.toLocaleString()}/mo
-            </span>
-          </div>
+          <div className="space-y-6">
+            <div className="bg-indigo-500/[0.03] border border-indigo-500/10 rounded-2xl p-6 flex justify-between items-center shadow-inner">
+              <div className="space-y-0.5">
+                <span className="text-[12px] text-slate-500 font-semibold uppercase tracking-wider">Estimated Monthly Spend</span>
+                <p className="text-[11px] text-slate-600">Calculated based on current public pricing</p>
+              </div>
+              <span className="font-display text-[28px] font-bold text-indigo-400">
+                ${currentTotalCost.toLocaleString()}
+              </span>
+            </div>
 
-          {error && <div className="bg-[#ef4444]/10 border border-[#ef4444]/20 text-[#ef4444] text-[13px] font-medium p-4 rounded-[12px] mb-6">{error}</div>}
-
-          <button 
-            type="submit" 
-            className="w-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white font-display font-bold py-4 px-6 rounded-[12px] shadow-[0_4px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.5)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_2px_10px_rgba(99,102,241,0.3)] transition-all flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                <span>Running Audit...</span>
-              </>
-            ) : (
-              <span>Analyze Spend & Identify Savings</span>
+            {error && (
+              <div className="bg-red-500/5 border border-red-500/10 text-red-400 text-[13px] font-medium p-4 rounded-xl">
+                {error}
+              </div>
             )}
-          </button>
+
+            <button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-display font-bold py-4 px-6 rounded-xl shadow-[0_12px_24px_-8px_rgba(79,70,229,0.4)] hover:shadow-[0_16px_32px_-8px_rgba(79,70,229,0.6)] hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <RefreshCcw className="w-5 h-5 animate-spin" />
+                  <span>Analyzing Your AI Stack...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-5 h-5 fill-current" />
+                  <span>Run Savings Audit</span>
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>

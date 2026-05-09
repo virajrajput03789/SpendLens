@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { generateFallbackSummary } from '@/lib/audit-engine';
+import OpenAI from 'openai';
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+// Initialize NVIDIA AI Client
+const client = new OpenAI({
+  baseURL: 'https://integrate.api.nvidia.com/v1',
+  apiKey: process.env.NVIDIA_API_KEY
+});
 
 export async function POST(req: Request) {
   try {
@@ -13,16 +15,8 @@ export async function POST(req: Request) {
       currentTotal, 
       toolsSummary, 
       totalSavings, 
-      topRecommendations,
-      toolCount,
-      annualSavings,
-      nextStep
+      topRecommendations
     } = await req.json();
-
-    if (!process.env.GOOGLE_API_KEY) {
-      const fallback = generateFallbackSummary(currentTotal, toolCount, useCase, teamSize, totalSavings, annualSavings, topRecommendations, nextStep);
-      return NextResponse.json({ summary: fallback });
-    }
 
     const prompt = `
 You are a financial advisor specializing in AI infrastructure costs.
@@ -41,29 +35,43 @@ Do not be generic. Do not use filler phrases like "it's important to note."
 End with one actionable next step they should take this week.
     `;
 
-    const model = genAI.getGenerativeModel(
-      { model: "gemini-1.5-flash-latest" },
-      { apiVersion: "v1beta" }
-    );
-    
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const summary = response.text() || generateFallbackSummary(currentTotal, toolCount, useCase, teamSize, totalSavings, annualSavings, topRecommendations, nextStep);
+    const response = await client.chat.completions.create({
+      model: "meta/llama-3.1-70b-instruct",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.1, // Lower temperature for faster, more focused response
+      max_tokens: 256,   // Drastically reduced tokens to speed up generation
+      presence_penalty: 0.1,
+      stream: true,
+    });
 
-    return NextResponse.json({ summary });
+    // Create a ReadableStream to stream the response
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        try {
+          for await (const chunk of response) {
+            const content = chunk.choices[0]?.delta?.content || "";
+            if (content) {
+              controller.enqueue(encoder.encode(content));
+            }
+          }
+        } catch (err: any) {
+          console.error('Stream error:', err);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+      },
+    });
+
   } catch (error) {
     console.error('Summary API Error:', error);
-    const body = await req.json().catch(() => ({}));
-    const fallback = generateFallbackSummary(
-      body.currentTotal || 0, 
-      body.toolCount || 0, 
-      body.useCase || 'mixed', 
-      body.teamSize || 1, 
-      body.totalSavings || 0, 
-      body.annualSavings || 0, 
-      body.topRecommendations || 'Reviewing tool usage', 
-      body.nextStep || 'Review your team plans'
-    );
-    return NextResponse.json({ summary: fallback });
+    return NextResponse.json({ error: 'Failed to generate summary' }, { status: 500 });
   }
 }

@@ -109,7 +109,7 @@ export default function AuditResults({ auditData, aiSummary, isPublic }: AuditRe
           <span className="text-[18px]">✨</span>
           <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#6366f1]">AI Executive Summary</span>
           <div className="bg-[#06b6d4]/10 border border-[#06b6d4]/20 rounded-full px-2.5 py-0.5 text-[10px] text-[#06b6d4] ml-auto">
-            Powered by Gemini
+            Powered by NVIDIA Llama 3.1
           </div>
         </div>
         

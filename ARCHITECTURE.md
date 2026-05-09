@@ -8,7 +8,7 @@ graph TD
     B --> C[audit-engine.ts — pure TS rules]
     C --> D[Supabase — store audit]
     D --> E[/api/summary POST]
-    E --> F[Google Gemini API]
+    E --> F[NVIDIA Llama-3.1-70B API]
     F --> G[Return audit ID]
     G --> H[/audit/id — results page]
     H --> I[/api/leads POST — email capture]
