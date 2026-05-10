@@ -106,7 +106,7 @@ export default function AuditResults({ auditData, aiSummary, isPublic }: AuditRe
       {/* AI Summary Card */}
       <div className="bg-white/[0.03] backdrop-blur-[20px] border border-white/[0.08] border-l-[3px] border-l-[#6366f1] rounded-[16px] p-8 shadow-xl animate-fade-up stagger-1" style={{ animationDelay: '0.1s' }}>
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-[18px]">✨</span>
+          <span className="text-[18px]" aria-hidden="true">✨</span>
           <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#6366f1]">AI Executive Summary</span>
           <div className="bg-[#06b6d4]/10 border border-[#06b6d4]/20 rounded-full px-2.5 py-0.5 text-[10px] text-[#06b6d4] ml-auto">
             Powered by NVIDIA Llama 3.1
